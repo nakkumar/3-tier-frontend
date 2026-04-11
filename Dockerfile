@@ -1,4 +1,4 @@
-# مرحله 1: Build stage
+#Build stage
 FROM node:21 AS builder
 
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# مرحله 2: Serve with nginx
+#Serve with nginx
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
