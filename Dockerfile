@@ -1,4 +1,4 @@
-#Build stagess
+#Build stagesss
 FROM node:21 AS builder
 
 WORKDIR /app
