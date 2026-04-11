@@ -1,13 +1,19 @@
-FROM node:21
+# مرحله 1: Build stage
+FROM node:21 AS builder
 
 WORKDIR /app
 
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
+RUN npm run build
 
-RUN npm i
+# مرحله 2: Serve with nginx
+FROM nginx:alpine
 
-COPY .env.sample .env.local
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 5173
+EXPOSE 80
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["nginx", "-g", "daemon off;"]
