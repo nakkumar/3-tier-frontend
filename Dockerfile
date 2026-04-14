@@ -1,19 +1,13 @@
-#Build stag
-FROM node:21 AS builder
+FROM node:21
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
-
 COPY . .
-RUN npm run build
 
-#Serve with nginx
-FROM nginx:alpine
+RUN npm i
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY .env.sample .env.local
 
-EXPOSE 80
+EXPOSE 5173
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev", "--", "--host"]
