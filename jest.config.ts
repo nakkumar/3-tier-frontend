@@ -2,6 +2,7 @@ export default {
   rootDir: 'src',
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
@@ -16,7 +17,6 @@ export default {
               options: {
                 metaObjectReplacement: {
                   env: {
-                    // Replicate as .env.local
                     VITE_API_PATH: 'http://localhost:3001',
                   },
                 },
@@ -27,18 +27,16 @@ export default {
       },
     ],
   },
+
   moduleNameMapper: {
-    // mocking assests and styling
     '\\.(gif|ttf|eot|svg|png|webp)$': '<rootDir>/config/jest/file-mock.ts',
     '^.+\\.(css|less|scss|sass)$': '<rootDir>/config/jest/style-mock.ts',
-
-    // making jest understand absolute paths
     '@/(.*)$': '<rootDir>/$1',
   },
+
   setupFilesAfterEnv: ['./config/jest/setup-tests.ts'],
+
   moduleFileExtensions: [
-    // Place tsx and ts to beginning as suggestion from Jest team
-    // https://jestjs.io/docs/configuration#modulefileextensions-arraystring
     'tsx',
     'ts',
     'web.js',
@@ -50,14 +48,15 @@ export default {
     'jsx',
     'node',
   ],
+
   modulePaths: ['<rootDir>/src'],
-  module.exports = {
+
+  // ✅ moved inside main object (instead of module.exports)
   collectCoverage: true,
   collectCoverageFrom: [
-    "src/**/*.{js,ts}",
-    "!src/**/*.d.ts",
+    'src/**/*.{js,ts}',
+    '!src/**/*.d.ts',
   ],
-  coverageDirectory: "coverage",
-  coverageReporters: ["lcov", "text"],
-};
+  coverageDirectory: 'coverage',
+  coverageReporters: ['lcov', 'text'],
 };
