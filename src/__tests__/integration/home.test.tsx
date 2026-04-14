@@ -2,6 +2,8 @@ import HomePage from '@/pages/home-page';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
+import axios from 'axios';
+import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 const mockedUseNavigate = jest.fn();
 
@@ -132,3 +134,41 @@ describe('Integration Test: Home Route', () => {
     expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
   });
 });
+
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+describe('Integration Test: Home Route', () => {
+  beforeEach(() => {
+    mockedAxios.get.mockResolvedValue({
+      data: [
+        // Your mock featured posts (5 items)
+        { id: 1, title: "Featured Post 1", featured: true },
+        { id: 2, title: "Featured Post 2", featured: true },
+        // ... 3 more
+      ]
+    });
+  });
+  
+  // Your tests here
+});
+
+
+
+// Your existing code...
+
+test('Home Route: Verify render of post card under Featured Posts section', async () => {
+  // Wait for skeleton to disappear and content to appear
+  await waitForElementToBeRemoved(() => 
+    screen.queryByTestId('featurepostcardskeleton')
+  );
+  
+  // Now look for the actual content
+  const featuredPostCard = await screen.findAllByTestId('featuredPostCard');
+  expect(featuredPostCard).toHaveLength(5);
+  
+  // Rest of your test assertions...
+});
+
+// Similarly update other failing tests
