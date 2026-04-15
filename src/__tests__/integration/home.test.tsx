@@ -147,11 +147,6 @@ const mockLatestPosts = [
   },
 ];
 
-// Filtered posts for Nature category
-const mockNaturePosts = mockFeaturedPosts.filter(post => 
-  post.categories.includes('Nature')
-);
-
 // Mock window.scrollTo
 beforeAll(() => {
   window.scrollTo = jest.fn();
@@ -166,6 +161,15 @@ describe('Integration Test: Home Route', () => {
   beforeEach(() => {
     // Setup mock API responses
     mockedAxios.get.mockImplementation((url) => {
+      // Handle category filter
+      if (typeof url === 'string' && url.includes('/api/posts/category/')) {
+        const category = url.split('/api/posts/category/')[1];
+        const filteredPosts = mockFeaturedPosts.filter(post => 
+          post.categories.includes(category)
+        );
+        return Promise.resolve({ data: filteredPosts });
+      }
+      
       if (url === 'http://localhost:3001/api/posts/featured') {
         return Promise.resolve({ data: mockFeaturedPosts });
       }
@@ -174,14 +178,6 @@ describe('Integration Test: Home Route', () => {
       }
       if (url === 'http://localhost:3001/api/posts') {
         return Promise.resolve({ data: mockLatestPosts });
-      }
-      // Handle category filter
-      if (typeof url === 'string' && url.includes('/api/posts/category/')) {
-        const category = url.split('/api/posts/category/')[1];
-        const filteredPosts = mockFeaturedPosts.filter(post => 
-          post.categories.includes(category)
-        );
-        return Promise.resolve({ data: filteredPosts });
       }
       return Promise.reject(new Error('Not found'));
     });
@@ -328,15 +324,7 @@ describe('Integration Test: Home Route', () => {
     //ASSERT
     const allPostCard = await screen.findAllByTestId('postcard');
     expect(allPostCard).toHaveLength(10);
-    /**
-     * INFO:
-     * - Read following artilce if you have confusion why target-element is
-     * inner-div or img-element inside the inner-div.
-     * - REF: https://javascript.info/bubbling-and-capturing
-     *
-     * - The outer div didn't had any click handlers so it failed to
-     *  capture event on it.
-     */
+    
     const img = allPostCard[0].getElementsByTagName('img')[0];
     await userEvent.click(img);
     expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
