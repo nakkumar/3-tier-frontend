@@ -147,6 +147,11 @@ const mockLatestPosts = [
   },
 ];
 
+// Filtered posts for Nature category
+const mockNaturePosts = mockFeaturedPosts.filter(post => 
+  post.categories.includes('Nature')
+);
+
 // Mock window.scrollTo
 beforeAll(() => {
   window.scrollTo = jest.fn();
@@ -169,6 +174,14 @@ describe('Integration Test: Home Route', () => {
       }
       if (url === 'http://localhost:3001/api/posts') {
         return Promise.resolve({ data: mockLatestPosts });
+      }
+      // Handle category filter
+      if (typeof url === 'string' && url.includes('/api/posts/category/')) {
+        const category = url.split('/api/posts/category/')[1];
+        const filteredPosts = mockFeaturedPosts.filter(post => 
+          post.categories.includes(category)
+        );
+        return Promise.resolve({ data: filteredPosts });
       }
       return Promise.reject(new Error('Not found'));
     });
@@ -227,25 +240,36 @@ describe('Integration Test: Home Route', () => {
       </BrowserRouter>
     );
 
-    // Wait for skeleton to disappear
+    // Wait for initial load to complete
     await waitForElementToBeRemoved(() => 
       screen.queryByTestId('featurepostcardskeleton')
     ).catch(() => {});
 
-    //ACT
-
-    //ASSERT
-    expect(screen.queryByTestId('featuredPostCard')).not.toBeInTheDocument();
-    const featuredPostCard = await screen.findAllByTestId('featuredPostCard');
-    expect(featuredPostCard).toHaveLength(5);
+    // Verify initial featured posts are loaded
+    const initialFeaturedPosts = await screen.findAllByTestId('featuredPostCard');
+    expect(initialFeaturedPosts).toHaveLength(5);
+    
+    // Find and click Nature category button
     const natureCategoryPill = screen.getByRole('button', {
       name: 'Nature',
     });
     expect(natureCategoryPill).toBeInTheDocument();
+    
+    //ACT - Click on Nature category
     await userEvent.click(natureCategoryPill);
+    
+    // Wait for loading to complete after category filter
+    await waitForElementToBeRemoved(() => 
+      screen.queryByTestId('featurepostcardskeleton')
+    ).catch(() => {});
+    
+    //ASSERT
     expect(await screen.findByText('Posts related to "Nature"')).toBeInTheDocument();
-    // Strange test got passed api response is 3 over local backend
-    expect(await screen.findAllByTestId('featuredPostCard')).toHaveLength(5);
+    
+    // Wait for filtered posts to load
+    const filteredPosts = await screen.findAllByTestId('featuredPostCard');
+    // Should only show posts with Nature category (posts 1 and 5 have Nature)
+    expect(filteredPosts.length).toBe(2);
   });
 
   test('Home Route: Verify navigation on post card click under Featured Posts section', async () => {
