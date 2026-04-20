@@ -15,7 +15,7 @@ export default function FeaturedPostCard({
     <div
       className={`active:scale-click group flex h-auto cursor-pointer flex-col gap-2 rounded-lg bg-light dark:bg-dark-card sm:h-48 sm:flex-row`}
       onClick={() => navigate(`/details-page/${slug}/${post._id}`, { state: { post } })}
-      data-testid={testId}
+      data-testid="featuredPostCard"
     >
       <div className="w-full overflow-hidden sm:w-1/3">
         <img
