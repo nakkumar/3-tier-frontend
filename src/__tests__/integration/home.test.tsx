@@ -47,7 +47,7 @@ describe('Integration Test: Home Route', () => {
 beforeEach(() => {
 mockedAxios.get.mockImplementation((url) => {
 
-```
+
   if (typeof url === 'string' && url.includes('/api/posts/category/')) {
     const category = url.split('/api/posts/category/')[1];
     const filteredPosts = mockFeaturedPosts.filter(post =>
@@ -66,7 +66,7 @@ mockedAxios.get.mockImplementation((url) => {
 
   return Promise.reject(new Error('Not found'));
 });
-```
+
 
 });
 
@@ -74,11 +74,11 @@ test('Home Route: Renders home page', async () => {
 render( <BrowserRouter> <HomePage /> </BrowserRouter>
 );
 
-```
+
 expect(screen.getByText(/WanderLust/)).toBeInTheDocument();
 expect(screen.getByRole('button', { name: /Create post/i })).toBeInTheDocument();
 expect(screen.getByText(/Featured Posts/)).toBeInTheDocument();
-```
+
 
 });
 
@@ -86,13 +86,13 @@ test('Home Route: Verify navigation on create post button click', async () => {
 render( <BrowserRouter> <HomePage /> </BrowserRouter>
 );
 
-```
+
 const createPost = screen.getByRole('button', { name: /Create post/i });
 
 await userEvent.click(createPost);
 
 expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
-```
+
 
 });
 
@@ -100,7 +100,7 @@ test('Home Route: Verify filtered posts render on category button click', async 
 render( <BrowserRouter> <HomePage /> </BrowserRouter>
 );
 
-```
+
 // Wait initial load
 await waitForElementToBeRemoved(() =>
   screen.queryByTestId('featurepostcardskeleton')
@@ -122,7 +122,7 @@ await waitFor(() => {
   const filteredPosts = screen.getAllByTestId('featuredPostCard');
   expect(filteredPosts).toHaveLength(2);
 });
-```
+
 
 });
 
@@ -130,7 +130,7 @@ test('Home Route: Verify navigation on featured post click', async () => {
 render( <BrowserRouter> <HomePage /> </BrowserRouter>
 );
 
-```
+
 await waitForElementToBeRemoved(() =>
   screen.queryByTestId('featurepostcardskeleton')
 ).catch(() => {});
@@ -140,7 +140,7 @@ const posts = await screen.findAllByTestId('featuredPostCard');
 await userEvent.click(posts[0]);
 
 expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
-```
+
 
 });
 
@@ -148,14 +148,14 @@ test('Home Route: Verify all posts render', async () => {
 render( <BrowserRouter> <HomePage /> </BrowserRouter>
 );
 
-```
+
 await waitForElementToBeRemoved(() =>
   screen.queryByTestId('postcardskeleton')
 ).catch(() => {});
 
 const posts = await screen.findAllByTestId('postcard');
 expect(posts).toHaveLength(10);
-```
+
 
 });
 
